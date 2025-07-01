@@ -1,0 +1,80 @@
+.. _exotic-generator-release-notes:
+
+Release Notes
+=============
+
+main
+----
+
+Oct. 24, 2024 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.12.0???
+
+* monopole-generator --> exotic-generator
+* Complete rework of the code structure
+* Added possibility to simulate Q-balls and Shadow charges
+* Added inverse power law distribution (negative index)
+* Added a charge parameter also for monopoles (n=g/gD)
+* Added a cross section (sigma_0) parameter to automatically calculate proton decay mean free path from particle speed
+* Removed speedmin, betaThreshold and calcDen parameters
+* Extended monopole energy loss to lower speeds
+
+Oct. 24, 2024 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.12.0
+
+* Update majority of tests to I3MTRandomService (#3658)
+* Clean up doxygen warnings (#3640)
+* remove execute bit from a few C++ source files
+* Fix copyright and license statements in simulation projects (#3546)
+
+June 18, 2024 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.11.0
+
+* Run mypy in CI (#3480)
+* mypy cleanup for simulation projects (#3417)
+
+Feb. 20, 2024 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.9.2
+
+* Delete mailinglist files (#3357)
+* Add upgrade rules to ruff (#3316)
+* add ruff rule PLW0602 global-variable-not-assigned (#3331)
+
+Dec. 14, 2023 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.9.0
+
+* Clean up invalid escape sequences for python3.12 (#3286)
+* fix E703 useless-semicolon (#3266)
+* remove unnecessary ``__future__`` imports (#3243)
+* general python cleanups
+
+Sep. 28, 2023 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.8.0
+
+* replace deprecated unittest asserts with modern equivalents  (#3168)
+* fixed powerlawindex check (#3066)
+
+June 22, 2023 don la dieu (nega at icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.7.0
+
+* Make I3Tray.I3Tray and icecube.icetray.I3Tray the same thing. (#3102)
+* General code cleanups
+
+Dec. 12, 2022 don la dieu (nega AT icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.5.0
+
+* Documentation cleanups
+
+Jul. 27, 2022 don la dieu (nega AT icecube.umd.edu)
+---------------------------------------------------
+IceTray Release v1.4.0
+
+* Drop support for Python 2
+* Clean up documentation
