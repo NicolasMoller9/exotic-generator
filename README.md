@@ -95,7 +95,7 @@ For a detailed flexible python script with the whole simulation chain, see [reso
 - **`InfoName`** (Default: "EXOInfoDict")
   Name of the exotic info dictionary, containing all necessary information about the generation parameters.
 
-Parameters for catalysis processes (ex: proton-decay by magnetic monopoles):
+Parameters for catalysis processes (ex: proton-decay catalysis by magnetic monopoles):
 
 - **`MeanFreePath`** (Default: -1)
   Mean free path between catalyzed processes. If set to the default value (-1), the mean free path will be calculated automatically from the cross section value of the catalysis process. If no cross section value is given, the mean free path will be 'NaN' and no catalysis process will be simulated. Example: `10 * I3Units::m`
@@ -163,21 +163,22 @@ Furthermore, the starting position on the generation disk can be set to a fixed 
 
 ### Propagating Exotic Particles in Simulations
 
-The exotic-propagator module moves the generated exotic particles along a track and simulates its eventual interactions with the medium.
+The exotic-propagator module moves the generated exotic particles along a straight line and simulates its eventual interactions with the medium.
 
 For magnetic monopoles, if the value of velocity stored in the info directory is below 0.09*c, proton decay catalysis can be simulated by giving a value to either `MeanFreePath` or `CrossSection`. If beta is above 0.09 and a value is given to one of these two parameters, there will be a warning and the catalysis process will be turned off.
 When giving a value of CrossSection, the mean free path is calculated internaly as a function of beta:
 ![proton decay catalysis](resources/docs/PDecay_MFP.png)
-When simulating proton decays, the propagator adds Poisson-distributed numbers of cascades at uniformly distributed positions along the monopole particle tracks. By default, for each catalyzed proton decay, a positron ("eplus") is produced, carrying the whole energy from the proton. Although this is not correct physics-wise, the light output is the same, as the direction of each cascade is randomized as well. Nevertheless, there is the option to use the correct decay (`UseCorrectDecay`) into a 460-MeV positron and a 480-MeV neutral pion at the cost of twice as much secondary particles in the `MCTree`, which have to be propagated through the detector.
+
+When simulating proton decays, the propagator adds Poisson-distributed numbers of cascades at uniformly distributed positions along the monopole particle track. By default, for each catalyzed proton decay, a positron ("eplus") is produced, carrying the whole energy from the proton. Although this is not correct physics-wise, the light output is the same, as the direction of each cascade is randomized as well. Nevertheless, there is the option to use the correct decay (`UseCorrectDecay`) into a 460-MeV positron and a 480-MeV neutral pion at the cost of twice as much secondary particles in the `MCTree`, which have to be propagated through the detector.
 To save further computing resources, the option `ScaleEnergy` allows to reduce the number of cascades (stipulates a mean free path of 1 m) while increasing their energy. This is helpful for short mean free paths.
 
 If `CalculateEnergy` is true and a value is given to either `StepSize` or `MinLength` and `MaxLength`, the propagator calculates the energy loss of the particle per simulation step depending on the exotic particle mass and updates the exotic particle velocity in each simulation step accordingly. The module returns an `MCTree` containing many particles lined up in order to track the velocity changes.
 
 If one wishes to simulate light emission from a catalysis process only, setting `KeepPrimary` to false will effectively set the track length of the primary exotic to 0, making it effectively dark in light simulators.
 
-Note1: For monopole, proton decay catalysis is model dependent, while luminescence is not. If one wants to simulate only luminescence light and turn off proton decay, no parameters need to be set as this is the by default configuration.
+Note1: For monopole, proton decay catalysis is model dependent, while luminescence is not. If one wants to simulate only luminescence light and turn off proton decay, no parameters need to be set as this is the default configuration.
 
-Note2: All energy loss and light yield formulas of relevant exotic particles are written in python scripts under (resources/docs/matter_interactions/).
+Note2: All energy loss and light yield formulas of relevant exotic particles are written in python scripts under resources/docs/matter_interactions/.
 
 
 ## Running Tests
@@ -185,13 +186,19 @@ Note2: All energy loss and light yield formulas of relevant exotic particles are
 This project includes [python tests](./resources/test) and [cpp tests](./private/test).
 
 To use the cpp test, you first need to type in your build directory:
+```bash
 $ cd $I3_BUILD
 $ make test-bins
+```
 Then you can run all tests, including the python ones:
+```bash
 $ cd exotic-generator
 $ make test
+```
 If a test fail, you can see the details by using verbose:
+```bash
 $ ctest -V
+```
 
 ## Contributing
 
@@ -200,14 +207,14 @@ If you do encounter a bug or you would like to make a suggestion, please create 
 If you would like to contribute code or make other changes to this project, please create a [pull request](https://github.com/fiedl/monopole-generator/pulls) on github. Make sure that the tests succeed before committing.
 
 IF YOU WANT TO ADD A NEW EXOTIC PARTICLE TO THE PROJECT (VERY WELCOME!):
+
 PS: Some changes are necessary only if your particle can catalyze particle cascades along its track (like magnetic monopoles), and are marked with a "(CAT)"
 - 1) Make sure the particle has an id recognized by icetray: 
     - > look in "dataclasses/public/dataclasses/physics/I3Particle.h" under the "Exotics" category and add your particle if missing (chose a name: NAME)
 - 2) If using PPC to simulate light emission from the exotic particle, make sure PPC can handle your particle:
-    - > look in i3ppc.cxx in the following part: "int iType(const I3Particle& p){...}"
-    - > Write "case I3Particle::{NAME}: return {ID};" where ID can be anything not already taken (doesn't have to be the same number as in I3Particle.h)
+    - > look in i3ppc.cxx in the following part: "int iType(const I3Particle& p){...}", and write "case I3Particle::{NAME}: return {ID};" where ID can be anything not already taken (doesn't have to be the same number as in I3Particle.h)
     - > Add a "else if (ptype == ID){...}" in the "pparticle" function of i3ppc.cxx
-    - > Ceate a new function responsible of calculating the light yield of your particle, similarly to "addp_monopole(x, y, z, t0-t0, E0, ll, beta)"
+    - > Create a new function responsible of calculating the light yield of your particle, similarly to "addp_monopole(x, y, z, t0-t0, E0, ll, beta)"
 - 3) Add in I3ExoticGenerator.cxx:
     - > line 100: "else if (part_id_ == {ID}) {particleType_ = I3Particle::{NAME}}
 - 4) Add in I3ExoticGeneratorUtils.cxx:
@@ -216,7 +223,7 @@ PS: Some changes are necessary only if your particle can catalyze particle casca
     - > Add the energy loss function of your particle if you want to be able to slow it down during propagation
 - 6) Add in I3ExoticPropagator.cxx:
     - > (CAT) line 170: "else if (pID == {ID}){deltaEnergy_ = {E}}" where E is the energy of the induced cascades (tunable with the parameter energyScaleFactor_)
-    - > (CAT) line 226: if the mean free path of the catalysis process can be calculated from a cross section value, add the correct equation in "CalculateMeanFreePath(){...}"
+    - > (CAT) line 226: if the mean free path of the catalysis process can be calculated from a cross section value, add the correct equations in "CalculateMeanFreePath(){...}"
 - 7) Add in I3ExoticPropagatorUtils.cxx:
     - > line 22: add your particle NAME
     - > line 29: add the mass validity range again
@@ -246,7 +253,7 @@ PS: Some changes are necessary only if your particle can catalyze particle casca
 - Kaplan, [The Classical Equations of Motion of Quantized Gauge Theories, Part2:Electromagnetism](https://doi.org/10.48550/arXiv.2307.09475), 2023
 
 #### Q-balls
-- Arvid Pohl, [Search for Subrelativistic Particles with the AMANDA Neutrino Telescope], PhD thesis, 2009
+- Arvid Pohl, Search for Subrelativistic Particles with the AMANDA Neutrino Telescope, PhD thesis, 2009
 - Ouchrif, [Energy losses of Q-balls in Matter, Earth and Detectors](https://doi.org/10.48550/arXiv.hep-ex/0004030), 2000
 - Kasuya, [IceCube potential for detecting Q-ball dark matter in gauge mediation](https://doi.org/10.48550/arXiv.1502.00715), 2015
 - Bakari, [Energy Losses of Q-balls](https://doi.org/10.48550/arXiv.hep-ex/0003003), 2000
